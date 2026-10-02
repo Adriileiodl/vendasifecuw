@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17231e">
+  <meta name="description" content="GameVault: contas e gamepasses para Blox Fruits.">
+  <title>GameVault | Blox Fruits</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17231e;
+      --muted: #65716a;
+      --paper: #f4f5ef;
+      --white: #fff;
+      --line: #e3e7de;
+      --green: #c8f169;
+      --green-dark: #31552b;
+      --orange: #ff8b58;
+      --font-body: "DM Sans", "Segoe UI", sans-serif;
+      --font-display: "Space Grotesk", "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { overflow-x: hidden; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-body); }
+    button { font: inherit; }
+    button:focus-visible, a:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+    .shell { width: min(1180px, calc(100% - 48px)); margin: 0 auto; }
+
+    .topbar { height: 76px; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,.13); position: relative; z-index: 2; background: var(--ink); color: white; }
+    .topbar-inner { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; color: white; text-decoration: none; font: 700 21px var(--font-display); letter-spacing: 0; }
+    .brand-mark { display: grid; place-items: center; width: 34px; height: 34px; background: var(--green); color: var(--ink); border-radius: 10px 10px 10px 3px; font-size: 17px; }
+    .top-actions { display: flex; align-items: center; gap: 12px; }
+    .language-select { color: white; background: transparent; border: 1px solid rgba(255,255,255,.25); border-radius: 7px; min-height: 40px; padding: 0 32px 0 12px; font-weight: 600; }
+    .language-select option { color: var(--ink); }
+    .cart-button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 42px; border: 0; border-radius: 7px; padding: 0 14px; background: var(--green); color: var(--ink); font-weight: 700; cursor: pointer; }
+    .cart-icon { font-size: 17px; line-height: 1; }
+    .cart-count { display: grid; place-items: center; min-width: 21px; height: 21px; padding: 0 5px; border-radius: 20px; background: var(--ink); color: white; font-size: 12px; }
+    .account-button { min-height: 40px; padding: 0 12px; border: 1px solid rgba(255,255,255,.25); border-radius: 7px; background: transparent; color: white; font-weight: 600; cursor: pointer; }
+    .account-button:hover { border-color: var(--green); color: var(--green); }
+
+    .lobby { padding: 52px 0 76px; }
+    .lobby-heading { max-width: 700px; margin-bottom: 29px; }
+    .lobby-heading h1 { font-size: clamp(35px, 5vw, 52px); }
+    .lobby-heading p:last-child { max-width: 560px; margin: 14px 0 0; color: var(--muted); line-height: 1.6; }
+    .game-card { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(290px, .75fr); min-height: 310px; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: var(--white); color: var(--ink); text-decoration: none; transition: transform .2s ease, box-shadow .2s ease; }
+    .game-card:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(23,35,30,.11); }
+    .game-cover-wrap { position: relative; min-height: 310px; overflow: hidden; background: #15251e; }
+    .game-cover { display: block; width: 100%; height: 100%; min-height: 310px; object-fit: cover; }
+    .cover-badge { position: absolute; left: 18px; bottom: 18px; padding: 8px 11px; border-radius: 5px; background: var(--green); color: var(--ink); font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    .game-card-copy { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 32px; }
+    .game-card-copy h2 { font-size: 30px; }
+    .game-card-copy p { margin: 11px 0 22px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+    .game-open { display: inline-flex; align-items: center; gap: 9px; padding: 12px 15px; border-radius: 6px; background: var(--ink); color: white; font-size: 13px; font-weight: 700; }
+    .game-open::after { content: "→"; color: var(--green); font-size: 18px; }
+    .game-view[hidden], .lobby[hidden] { display: none; }
+    .back-link { display: inline-flex; align-items: center; gap: 7px; margin: 24px 0 0; color: var(--green-dark); font-size: 13px; font-weight: 700; text-decoration: none; }
+    .back-link:hover { text-decoration: underline; }
+
+    .auth-overlay { position: fixed; inset: 0; z-index: 100000; display: grid; place-items: center; padding: 20px; background: rgba(12,20,16,.65); opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .18s ease, visibility .18s ease; }
+    .auth-overlay.open { opacity: 1; visibility: visible; pointer-events: auto; }
+    .auth-overlay[hidden] { display: none; }
+    .auth-dialog { width: min(440px, 100%); max-height: min(760px, calc(100dvh - 40px)); overflow-y: auto; padding: 25px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); box-shadow: 0 22px 70px rgba(0,0,0,.28); }
+    .auth-head { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 18px; }
+    .auth-head h2 { font-size: 23px; }
+    .auth-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 4px; margin: 0 0 20px; border: 1px solid var(--line); border-radius: 6px; background: white; }
+    .auth-tab { min-height: 38px; border: 0; border-radius: 4px; background: transparent; color: var(--muted); font-weight: 700; cursor: pointer; }
+    .auth-tab[aria-selected="true"] { background: var(--ink); color: white; }
+    .auth-form { display: grid; gap: 14px; }
+    .auth-form label { display: grid; gap: 6px; font-size: 12px; font-weight: 700; }
+    .auth-form input { width: 100%; min-height: 44px; padding: 0 12px; border: 1px solid #cbd3c9; border-radius: 5px; background: white; color: var(--ink); font: 500 14px var(--font-body); }
+    .auth-submit, .auth-signout { min-height: 44px; border: 0; border-radius: 5px; background: var(--ink); color: white; font-weight: 700; cursor: pointer; }
+    .auth-submit:disabled { opacity: .65; cursor: wait; }
+    .auth-message { min-height: 18px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .auth-message.error { color: #a33425; }
+    .auth-user { display: grid; gap: 14px; padding-top: 8px; }
+    .auth-email { overflow-wrap: anywhere; padding: 12px; border: 1px solid var(--line); border-radius: 5px; background: white; font-size: 13px; }
+    .auth-role { display: block; margin-top: 6px; color: var(--green-dark); font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    .auth-setup { padding: 12px; border-left: 3px solid var(--orange); background: #fff5ed; color: #69432e; font-size: 12px; line-height: 1.55; }
+    .auth-signout { background: #e8ece6; color: var(--ink); }
+
+    .hero { position: relative; overflow: hidden; min-height: 300px; background: var(--ink); color: white; }
+    .hero::before { content: ""; position: absolute; width: 430px; height: 430px; border-radius: 50%; right: 4%; top: -245px; border: 1px solid rgba(200,241,105,.18); box-shadow: 0 0 0 35px rgba(200,241,105,.035), 0 0 0 75px rgba(200,241,105,.025); }
+    .hero-inner { min-height: 300px; display: grid; grid-template-columns: 1fr 360px; align-items: center; gap: 48px; position: relative; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 17px; color: var(--green); font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+    h1 { max-width: 620px; margin: 0; font: 600 clamp(36px, 5vw, 56px)/1.02 var(--font-display); letter-spacing: 0; }
+    .hero-copy { max-width: 490px; margin: 16px 0 0; color: #c6cec7; font-size: 15px; line-height: 1.65; }
+    .hero-art { height: 235px; position: relative; display: grid; place-items: center; }
+    .art-disc { display: grid; place-items: center; width: 172px; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 35% 28%, #edffb2 0 5%, #c8f169 6% 20%, #79ad41 55%, #3f703a 100%); border: 7px solid rgba(255,255,255,.12); box-shadow: 0 20px 55px rgba(0,0,0,.28); transform: rotate(-12deg); font-size: 74px; }
+    .art-tag { position: absolute; padding: 10px 13px; border: 1px solid rgba(255,255,255,.2); border-radius: 7px; background: #23352b; color: #e6eee6; font-size: 12px; font-weight: 700; box-shadow: 0 8px 22px rgba(0,0,0,.17); }
+    .art-tag.top { top: 30px; right: 1px; transform: rotate(5deg); }
+    .art-tag.bottom { bottom: 28px; left: 5px; transform: rotate(-5deg); }
+
+    .catalog { padding: 43px 0 72px; }
+    .catalog-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 23px; }
+    .section-kicker { margin: 0 0 6px; color: var(--green-dark); font-size: 11px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; }
+    h2 { margin: 0; font: 600 28px/1.2 var(--font-display); letter-spacing: 0; }
+    .item-count { color: var(--muted); font-size: 13px; }
+    .product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 17px; }
+    .product-card { min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: var(--white); display: flex; flex-direction: column; transition: transform .2s ease, box-shadow .2s ease; animation: arrive .5s both; }
+    .product-card:nth-child(2) { animation-delay: .08s; }
+    .product-card:nth-child(3) { animation-delay: .16s; }
+    .product-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(23,35,30,.08); }
+    .product-art { position: relative; display: grid; place-items: center; min-height: 185px; overflow: hidden; background: #e7eddf; }
+    .product-art::before, .product-art::after { content: ""; position: absolute; border: 1px solid rgba(23,35,30,.10); border-radius: 50%; }
+    .product-art::before { width: 190px; height: 190px; }
+    .product-art::after { width: 240px; height: 240px; }
+    .product-art.account { background: #e4edda; }
+    .product-art.boat { background: #e0edf0; }
+    .product-art.money { background: #f5e9d9; }
+    .artifact { z-index: 1; display: grid; place-items: center; width: 104px; height: 104px; border-radius: 28px; box-shadow: 0 14px 25px rgba(23,35,30,.15); font-size: 54px; transform: rotate(-7deg); }
+    .account .artifact { background: linear-gradient(145deg, #d3f883, #79b943); border: 4px solid rgba(255,255,255,.72); border-radius: 50%; }
+    .boat .artifact { background: linear-gradient(145deg, #c9f5f3, #64abb0); border: 4px solid rgba(255,255,255,.7); }
+    .money .artifact { background: linear-gradient(145deg, #ffe5a5, #e8a94a); border: 4px solid rgba(255,255,255,.75); }
+    .art-label { position: absolute; z-index: 1; bottom: 13px; left: 15px; color: rgba(23,35,30,.68); font: 700 10px var(--font-display); letter-spacing: .08em; text-transform: uppercase; }
+    .product-content { padding: 18px 18px 16px; display: flex; flex: 1; flex-direction: column; }
+    .product-type { margin: 0 0 7px; color: var(--green-dark); font-size: 10px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
+    h3 { margin: 0; font: 600 18px/1.27 var(--font-display); letter-spacing: 0; }
+    .description { min-height: 47px; margin: 9px 0 13px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .details { display: grid; gap: 8px; padding: 12px 0 13px; margin-top: auto; border-top: 1px solid var(--line); }
+    .detail-row { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; }
+    .detail-row span:first-child { color: var(--muted); }
+    .detail-row span:last-child { text-align: right; font-weight: 600; }
+    .stock { display: inline-flex; align-items: center; gap: 6px; color: #31552b; }
+    .stock::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #5c9c3d; }
+    .buy-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 13px; border-top: 1px solid var(--line); }
+    .price { font: 700 21px var(--font-display); white-space: nowrap; }
+    .price small { display: block; margin-bottom: 2px; color: var(--muted); font: 500 10px var(--font-body); }
+    .add-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 39px; border: 0; border-radius: 6px; padding: 0 11px; background: var(--ink); color: white; font-size: 12px; font-weight: 700; cursor: pointer; transition: background .15s ease; }
+    .add-button:hover { background: #31552b; }
+    .add-button:disabled { background: #a6afa8; cursor: not-allowed; }
+    .plus { font-size: 17px; line-height: 0; }
+    .footer { display: flex; justify-content: space-between; gap: 20px; padding: 19px 0 25px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    .footer strong { color: var(--ink); font-family: var(--font-display); }
+
+    .overlay { position: fixed; inset: 0; z-index: 5; background: rgba(12,20,16,.48); opacity: 0; pointer-events: none; transition: opacity .2s ease; }
+    .overlay.open { opacity: 1; pointer-events: auto; }
+    .cart-panel { position: fixed; z-index: 6; top: 0; right: 0; width: min(420px, 100%); height: 100dvh; padding: 23px; background: var(--paper); box-shadow: -14px 0 40px rgba(0,0,0,.14); clip-path: inset(0 0 0 100%); visibility: hidden; pointer-events: none; transition: clip-path .25s ease, visibility .25s; display: flex; flex-direction: column; }
+    .cart-panel.open { clip-path: inset(0); visibility: visible; pointer-events: auto; }
+    .cart-head { display: flex; justify-content: space-between; align-items: center; padding-bottom: 19px; border-bottom: 1px solid var(--line); }
+    .cart-head h2 { font-size: 22px; }
+    .close-button { display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 6px; background: white; color: var(--ink); font-size: 20px; cursor: pointer; }
+    .cart-items { overflow: auto; flex: 1; }
+    .empty-cart { padding: 30px 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+    .cart-item { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding: 17px 0; border-bottom: 1px solid var(--line); }
+    .cart-item h3 { font-size: 14px; }
+    .cart-item p { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+    .quantity { display: inline-flex; align-items: center; gap: 9px; margin-top: 10px; }
+    .quantity button { width: 26px; height: 26px; border: 1px solid var(--line); border-radius: 5px; background: white; cursor: pointer; }
+    .item-total { text-align: right; font-size: 13px; font-weight: 700; }
+    .cart-bottom { padding-top: 17px; border-top: 1px solid var(--line); }
+    .subtotal { display: flex; justify-content: space-between; margin-bottom: 14px; font-weight: 700; }
+    .checkout { width: 100%; min-height: 46px; border: 0; border-radius: 6px; background: var(--ink); color: white; font-weight: 700; cursor: pointer; }
+    .checkout:disabled { background: #a6afa8; cursor: not-allowed; }
+    .checkout-note { margin: 12px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+    .toast { position: fixed; z-index: 8; left: 50%; bottom: 22px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; padding: 12px 17px; border-radius: 6px; background: var(--ink); color: white; font-size: 13px; box-shadow: 0 8px 26px rgba(0,0,0,.18); transition: opacity .18s ease, transform .18s ease; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    @keyframes arrive { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 850px) {
+      .hero-inner { grid-template-columns: 1fr 270px; gap: 18px; }
+      .hero-art { transform: scale(.88); }
+      .product-grid { gap: 12px; }
+      .product-content { padding: 15px 14px; }
+      .buy-row { align-items: end; }
+      .add-button { padding: 0 9px; }
+    }
+    @media (max-width: 650px) {
+      .shell { width: min(calc(100% - 32px), 480px); }
+      .topbar { height: 66px; }
+      .topbar-inner { gap: 8px; }
+      .brand { gap: 7px; font-size: 17px; }
+      .brand-mark { width: 30px; height: 30px; }
+      .top-actions { gap: 7px; }
+      .language-select { width: 120px; min-height: 38px; padding: 0 22px 0 7px; font-size: 11px; }
+      .account-button { width: 34px; min-height: 34px; padding: 0; }
+      .account-label { display: none; }
+      .cart-button { min-height: 38px; gap: 5px; padding: 0 8px; }
+      .cart-label { display: none; }
+      .hero-inner { min-height: 280px; grid-template-columns: minmax(0,1fr) 115px; gap: 0; }
+      .hero { min-height: 280px; }
+      .hero-art { height: 190px; transform: scale(.68); transform-origin: center right; }
+      .art-disc { width: 150px; font-size: 64px; }
+      .art-tag.top { right: -3px; top: 7px; }
+      .art-tag.bottom { left: -6px; bottom: 3px; }
+      .eyebrow { font-size: 9px; margin-bottom: 12px; }
+      h1 { font-size: 37px; }
+      .hero-copy { font-size: 13px; line-height: 1.5; }
+      .catalog { padding-top: 31px; }
+      .catalog-head { margin-bottom: 17px; }
+      h2 { font-size: 24px; }
+      .item-count { font-size: 11px; white-space: nowrap; }
+      .product-grid { grid-template-columns: 1fr; gap: 12px; }
+      .product-card { display: grid; grid-template-columns: 118px minmax(0,1fr); min-height: 202px; }
+      .product-art { min-height: 100%; }
+      .product-art::before { width: 130px; height: 130px; }
+      .product-art::after { width: 170px; height: 170px; }
+      .artifact { width: 74px; height: 74px; border-radius: 21px; font-size: 39px; }
+      .art-label { bottom: 9px; left: 8px; font-size: 8px; }
+      .product-content { padding: 13px 12px; }
+      .product-type { font-size: 9px; }
+      h3 { font-size: 15px; }
+      .description { min-height: auto; margin: 6px 0 9px; font-size: 11px; line-height: 1.4; }
+      .details { gap: 5px; padding: 8px 0; }
+      .detail-row { font-size: 10px; }
+      .buy-row { padding-top: 9px; }
+      .price { font-size: 18px; }
+      .price small { font-size: 9px; }
+      .add-button { min-height: 34px; font-size: 10px; }
+      .footer { padding-bottom: 20px; font-size: 10px; }
+    }
+    @media (max-width: 380px) {
+      .topbar-inner { gap: 4px; }
+      .brand { gap: 4px; font-size: 15px; }
+      .brand-mark { width: 25px; height: 25px; }
+      .language-select { width: 82px; padding-right: 17px; font-size: 10px; }
+      .account-button { width: 34px; min-height: 34px; padding: 0; }
+      .account-label { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="#top" aria-label="GameVault"><span class="brand-mark" aria-hidden="true">G</span><span>GameVault</span></a>
+      <div class="top-actions">
+        <label class="sr-only" for="language">Idioma</label>
+        <select class="language-select" id="language" aria-label="Idioma" title="Português · English · Español">
+          <option value="pt">PT</option>
+          <option value="en">EN</option>
+          <option value="es">ES</option>
+        </select>
+        <button class="account-button" id="open-auth" type="button" aria-label="Entrar"><span aria-hidden="true">◉</span><span class="account-label" data-i18n="accountButton">Entrar</span></button>
+        <button class="cart-button" id="open-cart" type="button" aria-label="Abrir carrinho">
+          <span class="cart-icon" aria-hidden="true">▣</span><span class="cart-label" data-i18n="cart">Carrinho</span><span class="cart-count" id="cart-count">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="lobby shell" id="lobby-view" aria-labelledby="lobby-title">
+      <div class="lobby-heading"><p class="section-kicker" data-i18n="lobbyKicker">Selecione uma experiência</p><h1 id="lobby-title" data-i18n="lobbyTitle">Qual jogo vamos abrir?</h1><p data-i18n="lobbyCopy">Escolha um jogo para ver os itens disponíveis na GameVault.</p></div>
+      <a class="game-card" href="#blox-fruits" id="open-game">
+        <div class="game-cover-wrap"><img class="game-cover" src="https://tr.rbxcdn.com/180DAY-774ec14539b264f85fdb6e8a34dfa344/512/512/Image/Png/noFilter" alt="Ícone oficial de Blox Fruits no Roblox" data-i18n-alt="bloxCoverAlt"><span class="cover-badge" data-i18n="availableNow">Disponível agora</span></div>
+        <div class="game-card-copy"><p class="section-kicker" data-i18n="robloxGame">Jogo Roblox</p><h2>Blox Fruits</h2><p data-i18n="bloxCardCopy">Contas e gamepasses para sua próxima aventura no mar.</p><span class="game-open" data-i18n="viewItems">Ver itens</span></div>
+      </a>
+    </section>
+    <div class="game-view" id="game-view" hidden>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="shell hero-inner">
+        <div>
+          <p class="eyebrow" data-i18n="eyebrow">GameVault apresenta</p>
+          <h1 id="hero-title" data-i18n="heroTitle">Blox Fruits.<br>Seu próximo nível.</h1>
+          <p class="hero-copy" data-i18n="heroCopy">Contas e gamepasses selecionados para sua próxima aventura. Escolha seu item e confira o estoque disponível.</p>
+        </div>
+        <div class="hero-art"><img class="game-cover" src="https://tr.rbxcdn.com/180DAY-774ec14539b264f85fdb6e8a34dfa344/512/512/Image/Png/noFilter" alt="Ícone oficial de Blox Fruits no Roblox" data-i18n-alt="bloxCoverAlt"></div>
+      </div>
+    </section>
+
+    <section class="catalog shell" aria-labelledby="catalog-title">
+      <div class="catalog-head">
+        <div><p class="section-kicker" data-i18n="sectionKicker">Catálogo</p><h2 id="catalog-title" data-i18n="catalogTitle">Blox Fruits</h2></div>
+        <span class="item-count" data-i18n="itemCount">3 itens disponíveis</span>
+      </div>
+      <div class="product-grid" id="product-grid"></div>
+    </section>
+    <div class="shell"><a class="back-link" href="#inicio" id="back-to-lobby" data-i18n="backToGames">← Voltar aos jogos</a></div>
+    </div>
+  </main>
+
+  <footer class="shell footer"><strong>GameVault</strong><span data-i18n="footerText">GameVault · Blox Fruits</span></footer>
+
+  <div class="overlay" id="overlay"></div>
+  <aside class="cart-panel" id="cart-panel" aria-label="Carrinho" aria-hidden="true">
+    <div class="cart-head"><h2 data-i18n="cartTitle">Seu carrinho</h2><button class="close-button" id="close-cart" type="button" aria-label="Fechar carrinho">×</button></div>
+    <div class="cart-items" id="cart-items"></div>
+    <div class="cart-bottom">
+      <div class="subtotal"><span data-i18n="subtotal">Subtotal</span><span id="subtotal">R$ 0,00</span></div>
+      <button class="checkout" id="checkout" type="button" disabled data-i18n="checkout">Continuar para pagamento</button>
+      <p class="checkout-note" data-i18n="checkoutNote">O pagamento online ainda não está configurado. Nenhuma cobrança será feita.</p>
+    </div>
+  </aside>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="auth-overlay" id="auth-overlay" aria-hidden="true" inert hidden>
+    <section class="auth-dialog" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+      <div class="auth-head"><h2 id="auth-title" data-i18n="accountTitle">Sua conta</h2><button class="close-button" id="close-auth" type="button" aria-label="Fechar">×</button></div>
+      <div id="auth-content"></div>
+    </section>
+  </div>
+
+  <script>
+    const products = [
+      {
+        id: "account", kind: "account", type: { pt: "Conta", en: "Account", es: "Cuenta" },
+        name: { pt: "LV 1800 + GodHuman", en: "LV 1800 + GodHuman", es: "LV 1800 + GodHuman" },
+        description: { pt: "Conta de Blox Fruits com nível 1800, estilo de luta GodHuman e frutas aleatórias.", en: "Blox Fruits account with level 1800, GodHuman fighting style, and random fruits.", es: "Cuenta de Blox Fruits nivel 1800, estilo de combate GodHuman y frutas aleatorias." },
+        details: { pt: [["Nível", "1800"], ["Estilo de luta", "GodHuman"], ["Frutas", "Aleatórias"]], en: [["Level", "1800"], ["Fighting style", "GodHuman"], ["Fruits", "Random"]], es: [["Nivel", "1800"], ["Estilo de combate", "GodHuman"], ["Frutas", "Aleatorias"]] },
+        price: 5, stock: 8, art: "🍈", artLabel: "LV 1800"
+      },
+      {
+        id: "boats", kind: "boat", type: { pt: "Gamepass", en: "Gamepass", es: "Gamepass" },
+        name: { pt: "Barcos Rápidos", en: "Fast Boats", es: "Barcos Rápidos" },
+        description: { pt: "Gamepass de barcos rápidos para navegar pelo mapa de Blox Fruits.", en: "Fast Boats gamepass for sailing across the Blox Fruits map.", es: "Gamepass de barcos rápidos para navegar por el mapa de Blox Fruits." },
+        details: { pt: [["Categoria", "Gamepass"], ["Jogo", "Blox Fruits"]], en: [["Category", "Gamepass"], ["Game", "Blox Fruits"]], es: [["Categoría", "Gamepass"], ["Juego", "Blox Fruits"]] },
+        price: 15, stock: 13, art: "🚤", artLabel: "FAST BOATS"
+      },
+      {
+        id: "money", kind: "money", type: { pt: "Gamepass", en: "Gamepass", es: "Gamepass" },
+        name: { pt: "2x Money", en: "2x Money", es: "2x Money" },
+        description: { pt: "Gamepass 2x Money para receber o dobro de dinheiro no jogo.", en: "2x Money gamepass to earn double money in the game.", es: "Gamepass 2x Money para obtener el doble de dinero en el juego." },
+        details: { pt: [["Benefício", "2x dinheiro"], ["Jogo", "Blox Fruits"]], en: [["Benefit", "2x money"], ["Game", "Blox Fruits"]], es: [["Beneficio", "2x dinero"], ["Juego", "Blox Fruits"]] },
+        price: 17.3, stock: 5, art: "🪙", artLabel: "2× MONEY"
+      }
+    ];
+
+    const translations = {
+      pt: {
+        accountButton: "Entrar", lobbyKicker: "Selecione um jogo", lobbyTitle: "Qual jogo vamos abrir?", lobbyCopy: "Escolha um jogo para ver os itens disponíveis na GameVault.", availableNow: "Disponível agora", robloxGame: "Jogo Roblox", bloxCardCopy: "Contas e gamepasses para sua próxima aventura no mar.", viewItems: "Ver itens", bloxCoverAlt: "Capa oficial de Blox Fruits no Roblox", backToGames: "← Voltar aos jogos", accountTitle: "Sua conta", signIn: "Entrar", signUp: "Criar conta", emailLabel: "E-mail", passwordLabel: "Senha", submitSignIn: "Entrar na GameVault", submitSignUp: "Criar minha conta", authConfigMissing: "O login precisa ser conectado ao projeto Supabase. Consulte o README para configurar.", authLoading: "Conectando...", authSignupSuccess: "Cadastro recebido. Confira seu e-mail para confirmar a conta, se a confirmação estiver ativada.", authLoginSuccess: "Entrada realizada.", authErrorFallback: "Não foi possível concluir. Confira os dados e tente novamente.", authSignOut: "Sair da conta", adminRole: "Administradora da loja", customerRole: "Conta GameVault", authClose: "Fechar janela de conta", authPasswordHint: "Use pelo menos 8 caracteres.", authSetup: "Configuração necessária: adicione a URL e a chave pública (anon) do Supabase em config.js. Nunca coloque uma chave service_role no site.",
+        cart: "Carrinho", openCart: "Abrir carrinho", eyebrow: "GameVault apresenta", heroTitle: "Blox Fruits.<br>Seu próximo nível.",
+        heroCopy: "Contas e gamepasses selecionados para sua próxima aventura. Escolha seu item e confira o estoque disponível.", heroTagTop: "BLOX FRUITS", heroTagBottom: "INVENTÁRIO DIGITAL", sectionKicker: "Catálogo", catalogTitle: "Blox Fruits", itemCount: "3 itens disponíveis", footerText: "Loja oficial · Blox Fruits",
+        cartTitle: "Seu carrinho", closeCart: "Fechar carrinho", subtotal: "Subtotal", checkout: "Continuar para pagamento", checkoutNote: "O pagamento online ainda não está configurado. Nenhuma cobrança será feita.", emptyCart: "Seu carrinho está vazio. Escolha um item do catálogo para começar.", stock: "em estoque", add: "Adicionar", added: "Adicionado ao carrinho", remove: "Remover uma unidade", checkoutUnavailable: "O pagamento online ainda não está configurado. Seus itens continuam no carrinho.", priceEach: "cada", footerText: "GameVault · Blox Fruits"
+      },
+      en: {
+        accountButton: "Sign in", lobbyKicker: "Choose a game", lobbyTitle: "Which game shall we open?", lobbyCopy: "Choose a game to browse the items available at GameVault.", availableNow: "Available now", robloxGame: "Roblox game", bloxCardCopy: "Accounts and gamepasses for your next adventure at sea.", viewItems: "Browse items", bloxCoverAlt: "Official Blox Fruits cover on Roblox", backToGames: "← Back to games", accountTitle: "Your account", signIn: "Sign in", signUp: "Create account", emailLabel: "Email", passwordLabel: "Password", submitSignIn: "Sign in to GameVault", submitSignUp: "Create my account", authConfigMissing: "Sign-in must be connected to a Supabase project. See the README for setup.", authLoading: "Connecting...", authSignupSuccess: "Sign-up received. Check your email to confirm your account if confirmation is enabled.", authLoginSuccess: "Signed in.", authErrorFallback: "Could not complete the request. Check your details and try again.", authSignOut: "Sign out", adminRole: "Store administrator", customerRole: "GameVault account", authClose: "Close account window", authPasswordHint: "Use at least 8 characters.", authSetup: "Setup required: add the Supabase URL and public anon key in config.js. Never put a service_role key on the website.",
+        cart: "Cart", openCart: "Open cart", eyebrow: "Presented by GameVault", heroTitle: "Blox Fruits.<br>Your next level.",
+        heroCopy: "Accounts and gamepasses selected for your next adventure. Choose an item and check the available stock.", heroTagTop: "BLOX FRUITS", heroTagBottom: "DIGITAL INVENTORY", sectionKicker: "Catalog", catalogTitle: "Blox Fruits", itemCount: "3 items available", footerText: "Official store · Blox Fruits",
+        cartTitle: "Your cart", closeCart: "Close cart", subtotal: "Subtotal", checkout: "Continue to payment", checkoutNote: "Online payment is not configured yet. You will not be charged.", emptyCart: "Your cart is empty. Choose an item from the catalog to get started.", stock: "in stock", add: "Add", added: "Added to cart", remove: "Remove one item", checkoutUnavailable: "Online payment is not configured yet. Your items are still in the cart.", priceEach: "each", footerText: "GameVault · Blox Fruits"
+      },
+      es: {
+        accountButton: "Entrar", lobbyKicker: "Elige un juego", lobbyTitle: "¿Qué juego abrimos?", lobbyCopy: "Elige un juego para ver los artículos disponibles en GameVault.", availableNow: "Disponible ahora", robloxGame: "Juego de Roblox", bloxCardCopy: "Cuentas y gamepasses para tu próxima aventura en el mar.", viewItems: "Ver artículos", bloxCoverAlt: "Portada oficial de Blox Fruits en Roblox", backToGames: "← Volver a los juegos", accountTitle: "Tu cuenta", signIn: "Entrar", signUp: "Crear cuenta", emailLabel: "Correo electrónico", passwordLabel: "Contraseña", submitSignIn: "Entrar en GameVault", submitSignUp: "Crear mi cuenta", authConfigMissing: "El inicio de sesión debe conectarse a un proyecto de Supabase. Consulta el README para configurarlo.", authLoading: "Conectando...", authSignupSuccess: "Registro recibido. Revisa tu correo para confirmar la cuenta si la confirmación está activada.", authLoginSuccess: "Sesión iniciada.", authErrorFallback: "No se pudo completar. Revisa tus datos e inténtalo de nuevo.", authSignOut: "Cerrar sesión", adminRole: "Administradora de la tienda", customerRole: "Cuenta GameVault", authClose: "Cerrar ventana de cuenta", authPasswordHint: "Usa al menos 8 caracteres.", authSetup: "Configuración necesaria: añade la URL y la clave pública (anon) de Supabase en config.js. Nunca publiques una clave service_role.",
+        cart: "Carrito", openCart: "Abrir carrito", eyebrow: "Presentado por GameVault", heroTitle: "Blox Fruits.<br>Tu próximo nivel.",
+        heroCopy: "Cuentas y gamepasses seleccionados para tu próxima aventura. Elige un artículo y consulta el stock disponible.", heroTagTop: "BLOX FRUITS", heroTagBottom: "INVENTARIO DIGITAL", sectionKicker: "Catálogo", catalogTitle: "Blox Fruits", itemCount: "3 artículos disponibles", footerText: "Tienda oficial · Blox Fruits",
+        cartTitle: "Tu carrito", closeCart: "Cerrar carrito", subtotal: "Subtotal", checkout: "Continuar al pago", checkoutNote: "El pago en línea aún no está configurado. No se realizará ningún cobro.", emptyCart: "Tu carrito está vacío. Elige un artículo del catálogo para empezar.", stock: "en stock", add: "Añadir", added: "Añadido al carrito", remove: "Quitar una unidad", checkoutUnavailable: "El pago en línea aún no está configurado. Tus artículos siguen en el carrito.", priceEach: "cada uno", footerText: "GameVault · Blox Fruits"
+      }
+    };
+
+    window.GAMEVAULT_TRANSLATIONS = translations;
+    let language = "pt";
+    const cart = new Map();
+    const formatter = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+    const productGrid = document.getElementById("product-grid");
+    const cartPanel = document.getElementById("cart-panel");
+    const overlay = document.getElementById("overlay");
+    const toast = document.getElementById("toast");
+    let toastTimer;
+
+    function text(key) { return translations[language][key]; }
+    function remaining(product) { return product.stock - (cart.get(product.id) || 0); }
+    function renderProducts() {
+      productGrid.innerHTML = products.map((product) => {
+        const stock = remaining(product);
+        const details = product.details[language].map(([label, value]) => `<div class="detail-row"><span>${label}</span><span>${value}</span></div>`).join("");
+        return `<article class="product-card">
+          <div class="product-art ${product.kind}" aria-hidden="true"><span class="artifact">${product.art}</span><span class="art-label">${product.artLabel}</span></div>
+          <div class="product-content">
+            <p class="product-type">${product.type[language]}</p><h3>${product.name[language]}</h3>
+            <p class="description">${product.description[language]}</p>
+            <div class="details">${details}<div class="detail-row"><span>${text("stock")}</span><span class="stock">${stock}</span></div></div>
+            <div class="buy-row"><div class="price"><small>${text("priceEach")}</small>${formatter.format(product.price)}</div><button class="add-button" type="button" data-add="${product.id}" ${stock === 0 ? "disabled" : ""}><span class="plus" aria-hidden="true">+</span>${text("add")}</button></div>
+          </div>
+        </article>`;
+      }).join("");
+      productGrid.querySelectorAll("[data-add]").forEach((button) => button.addEventListener("click", () => addToCart(button.dataset.add)));
+      document.querySelector(".cart-button").setAttribute("aria-label", text("openCart"));
+    }
+
+    function renderCart() {
+      const items = [...cart.entries()];
+      const quantity = items.reduce((sum, [, count]) => sum + count, 0);
+      document.getElementById("cart-count").textContent = quantity;
+      document.getElementById("cart-items").innerHTML = items.length ? items.map(([id, count]) => {
+        const product = products.find((entry) => entry.id === id);
+        return `<div class="cart-item"><div><h3>${product.name[language]}</h3><p>${formatter.format(product.price)} · ${text("priceEach")}</p><div class="quantity"><button type="button" data-remove="${id}" aria-label="${text("remove")}">−</button><span>${count}</span><button type="button" data-add="${id}" aria-label="${text("add")}" ${count >= product.stock ? "disabled" : ""}>+</button></div></div><span class="item-total">${formatter.format(product.price * count)}</span></div>`;
+      }).join("") : `<p class="empty-cart">${text("emptyCart")}</p>`;
+      document.getElementById("subtotal").textContent = formatter.format(items.reduce((sum, [id, count]) => sum + products.find((product) => product.id === id).price * count, 0));
+      document.getElementById("checkout").disabled = items.length === 0;
+      document.querySelectorAll("[data-remove]").forEach((button) => button.addEventListener("click", () => removeFromCart(button.dataset.remove)));
+      document.querySelectorAll("#cart-items [data-add]").forEach((button) => button.addEventListener("click", () => addToCart(button.dataset.add, false)));
+      renderProducts();
+    }
+
+    function addToCart(id, announce = true) {
+      const product = products.find((entry) => entry.id === id);
+      if (!product || remaining(product) <= 0) return;
+      cart.set(id, (cart.get(id) || 0) + 1);
+      renderCart();
+      if (announce) showToast(text("added"));
+    }
+
+    function removeFromCart(id) {
+      const count = cart.get(id) || 0;
+      if (count <= 1) cart.delete(id); else cart.set(id, count - 1);
+      renderCart();
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    function setCartOpen(open) {
+      cartPanel.classList.toggle("open", open);
+      overlay.classList.toggle("open", open);
+      cartPanel.setAttribute("aria-hidden", String(!open));
+      document.body.style.overflow = open ? "hidden" : "";
+    }
+
+    function setGameView(open) {
+      document.getElementById("lobby-view").hidden = open;
+      document.getElementById("game-view").hidden = !open;
+      history.replaceState(null, "", open ? "#blox-fruits" : "#inicio");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    document.getElementById("open-game").addEventListener("click", (event) => { event.preventDefault(); setGameView(true); });
+    document.getElementById("back-to-lobby").addEventListener("click", (event) => { event.preventDefault(); setGameView(false); });
+
+    document.getElementById("language").addEventListener("change", (event) => {
+      language = event.target.value;
+      document.documentElement.lang = language === "pt" ? "pt-BR" : language;
+      document.querySelectorAll("[data-i18n]").forEach((element) => {
+        const key = element.dataset.i18n;
+        element.innerHTML = translations[language][key];
+      });
+      document.querySelectorAll("[data-i18n-alt]").forEach((element) => { element.alt = translations[language][element.dataset.i18nAlt]; });
+      document.getElementById("open-cart").setAttribute("aria-label", text("openCart"));
+      document.getElementById("close-cart").setAttribute("aria-label", text("closeCart"));
+      cartPanel.setAttribute("aria-label", text("cartTitle"));
+      renderCart();
+      document.dispatchEvent(new Event("gamevault-language-change"));
+    });
+    document.getElementById("open-cart").addEventListener("click", () => setCartOpen(true));
+    document.getElementById("close-cart").addEventListener("click", () => setCartOpen(false));
+    overlay.addEventListener("click", () => setCartOpen(false));
+    document.getElementById("checkout").addEventListener("click", () => showToast(text("checkoutUnavailable")));
+    document.addEventListener("keydown", (event) => { if (event.key === "Escape") setCartOpen(false); });
+
+    renderProducts();
+    renderCart();
+  </script>
+  <script src="config.js"></script>
+  <script type="module">
+    const config = window.GAMEVAULT_CONFIG || {};
+    const translations = window.GAMEVAULT_TRANSLATIONS;
+    const authContent = document.getElementById("auth-content");
+    const authOverlay = document.getElementById("auth-overlay");
+    let language = document.documentElement.lang === "en" ? "en" : document.documentElement.lang === "es" ? "es" : "pt";
+    let mode = "signin";
+    let authMessage = "";
+    let messageIsError = false;
+    let client = null;
+    let user = null;
+    let role = "customer";
+
+    const t = (key) => translations[language][key];
+    const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
+
+    function renderAuth() {
+      if (user) {
+        authContent.innerHTML = `<div class="auth-user"><div class="auth-email">${escapeHtml(user.email || "")}<span class="auth-role">${role === "admin" ? t("adminRole") : t("customerRole")}</span></div><button class="auth-signout" id="auth-signout" type="button">${t("authSignOut")}</button></div>`;
+        authContent.querySelector("#auth-signout").addEventListener("click", async () => {
+          const { error } = await client.auth.signOut();
+          if (error) setMessage(error.message, true);
+        });
+        return;
+      }
+
+      const submittingLabel = mode === "signin" ? t("submitSignIn") : t("submitSignUp");
+      authContent.innerHTML = `<div class="auth-tabs" role="tablist"><button class="auth-tab" type="button" role="tab" data-mode="signin" aria-selected="${mode === "signin"}">${t("signIn")}</button><button class="auth-tab" type="button" role="tab" data-mode="signup" aria-selected="${mode === "signup"}">${t("signUp")}</button></div><form class="auth-form" id="auth-form"><label>${t("emailLabel")}<input name="email" type="email" autocomplete="email" required></label><label>${t("passwordLabel")}<input name="password" type="password" autocomplete="${mode === "signin" ? "current-password" : "new-password"}" minlength="8" required><span class="auth-message">${t("authPasswordHint")}</span></label><button class="auth-submit" type="submit">${submittingLabel}</button><p class="auth-message ${messageIsError ? "error" : ""}" id="auth-message" role="status" aria-live="polite">${escapeHtml(authMessage)}</p>${client ? "" : `<p class="auth-setup">${t("authSetup")}</p>`}</form>`;
+      authContent.querySelectorAll("[data-mode]").forEach((button) => button.addEventListener("click", () => { mode = button.dataset.mode; authMessage = ""; messageIsError = false; renderAuth(); }));
+      authContent.querySelector("#auth-form").addEventListener("submit", submitAuth);
+    }
+
+    function setMessage(message, isError = false) {
+      authMessage = message;
+      messageIsError = isError;
+      const messageNode = authContent.querySelector("#auth-message");
+      if (messageNode) {
+        messageNode.textContent = message;
+        messageNode.classList.toggle("error", isError);
+      }
+    }
+
+    async function loadRole() {
+      if (!client || !user) return;
+      const { data, error } = await client.from("profiles").select("role").eq("id", user.id).maybeSingle();
+      role = !error && data?.role === "admin" ? "admin" : "customer";
+      renderAuth();
+    }
+
+    async function submitAuth(event) {
+      event.preventDefault();
+      if (!client) return setMessage(t("authConfigMissing"), true);
+      const form = new FormData(event.currentTarget);
+      const email = String(form.get("email")).trim();
+      const password = String(form.get("password"));
+      const submitButton = event.currentTarget.querySelector(".auth-submit");
+      submitButton.disabled = true;
+      submitButton.textContent = t("authLoading");
+      try {
+        if (mode === "signup") {
+          const { data, error } = await client.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } });
+          if (error) throw error;
+          if (data.session) {
+            user = data.user;
+            await loadRole();
+          } else {
+            setMessage(t("authSignupSuccess"));
+          }
+        } else {
+          const { data, error } = await client.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+          user = data.user;
+          await loadRole();
+          setMessage(t("authLoginSuccess"));
+        }
+      } catch (error) {
+        setMessage(error.message || t("authErrorFallback"), true);
+      } finally {
+        const activeButton = authContent.querySelector(".auth-submit");
+        if (activeButton) {
+          activeButton.disabled = false;
+          activeButton.textContent = mode === "signin" ? t("submitSignIn") : t("submitSignUp");
+        }
+      }
+    }
+
+    function setAuthOpen(open) {
+      if (open) {
+        renderAuth();
+        authOverlay.hidden = false;
+        authOverlay.inert = false;
+        authOverlay.setAttribute("aria-hidden", "false");
+        authOverlay.classList.add("open");
+        window.setTimeout(() => authContent.querySelector("input")?.focus(), 0);
+      } else {
+        authOverlay.classList.remove("open");
+        authOverlay.setAttribute("aria-hidden", "true");
+        authOverlay.inert = true;
+        authOverlay.hidden = true;
+        document.getElementById("open-auth").focus();
+      }
+    }
+    document.getElementById("open-auth").addEventListener("click", () => setAuthOpen(true));
+    document.getElementById("close-auth").addEventListener("click", () => setAuthOpen(false));
+    authOverlay.addEventListener("click", (event) => { if (event.target === authOverlay) setAuthOpen(false); });
+    document.addEventListener("keydown", (event) => { if (event.key === "Escape") setAuthOpen(false); });
+    document.addEventListener("gamevault-language-change", () => {
+      language = document.documentElement.lang === "en" ? "en" : document.documentElement.lang === "es" ? "es" : "pt";
+      if (authOverlay.classList.contains("open")) renderAuth();
+    });
+
+    if (config.supabaseUrl && config.supabaseAnonKey) {
+      try {
+        const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
+        client = createClient(config.supabaseUrl, config.supabaseAnonKey);
+        const { data } = await client.auth.getSession();
+        user = data.session?.user || null;
+        if (user) await loadRole();
+        client.auth.onAuthStateChange((_event, session) => {
+          user = session?.user || null;
+          role = "customer";
+          if (user) window.setTimeout(loadRole, 0);
+          else renderAuth();
+        });
+      } catch (error) {
+        console.error("GameVault auth initialization failed", error);
+      }
+    }
+
+    if (config.tawkPropertyId && config.tawkWidgetId) {
+      window.Tawk_API = window.Tawk_API || {};
+      window.Tawk_LoadStart = new Date();
+      const script = document.createElement("script");
+      script.async = true;
+      script.src = `https://embed.tawk.to/${encodeURIComponent(config.tawkPropertyId)}/${encodeURIComponent(config.tawkWidgetId)}`;
+      script.charset = "UTF-8";
+      script.setAttribute("crossorigin", "*");
+      document.head.appendChild(script);
+    }
+  </script>
+</body>
+</html>
