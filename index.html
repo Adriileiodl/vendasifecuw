@@ -546,6 +546,22 @@
     const t = (key) => translations[language][key];
     const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
 
+    function isMissingDatabaseFunctionError(error) {
+      const message = String(error?.message || error || "");
+      return /(Could not find the function public\.|does not exist|schema cache|without parameters)/i.test(message);
+    }
+
+    async function safeRpc(functionName, params) {
+      try {
+        return await client.rpc(functionName, params);
+      } catch (error) {
+        if (isMissingDatabaseFunctionError(error)) {
+          throw new Error(`A função do banco "${functionName}" ainda não existe no projeto do Supabase. Execute o script "supabase-setup.sql" no SQL Editor antes de finalizar o pedido.`);
+        }
+        throw error;
+      }
+    }
+
     function renderAdminOrders(targetId) {
       if (!client || role !== "admin") return;
       const target = document.getElementById(targetId);
@@ -553,7 +569,7 @@
       target.hidden = false;
       target.innerHTML = `<h3>${t("adminPendingOrders")}</h3><p>${t("verifyPaymentFirst")}</p>`;
       (async () => {
-        const { error: expiryError } = await client.rpc("expire_gamevault_orders");
+        const { error: expiryError } = await safeRpc("expire_gamevault_orders");
         if (expiryError) throw expiryError;
         return client.from("orders").select("id,user_id,total_cents,created_at,order_items(product_name,quantity,unit_price_cents)").eq("status", "pending").order("created_at", { ascending: true });
       })().then(({ data, error }) => {
@@ -763,7 +779,9 @@
       clearInterval(orderPollTimer);
       if (order.status === "pending") {
         orderPollTimer = window.setInterval(async () => {
-          if (Date.now() - new Date(order.created_at).getTime() >= 20 * 60 * 1000) await client.rpc("expire_gamevault_orders");
+          if (Date.now() - new Date(order.created_at).getTime() >= 20 * 60 * 1000) {
+            await safeRpc("expire_gamevault_orders").catch(() => {});
+          }
           const { data: latest } = await client.from("orders").select("status").eq("id", orderId).maybeSingle();
           if (latest && latest.status !== "pending") {
             clearInterval(orderPollTimer);
@@ -801,9 +819,9 @@
       button.disabled = true;
       button.textContent = t("authLoading");
       try {
-        const { error: expireError } = await client.rpc("expire_gamevault_orders");
+        const { error: expireError } = await safeRpc("expire_gamevault_orders");
         if (expireError) throw expireError;
-        const { data, error } = await client.rpc("create_gamevault_order", { p_items: items });
+        const { data, error } = await safeRpc("create_gamevault_order", { p_items: items });
         if (error) throw error;
         currentOrderId = data.id;
         localStorage.setItem("gamevault-current-order", currentOrderId);
@@ -823,7 +841,7 @@
     async function cancelCurrentOrder() {
       if (!currentOrderId || !client) return;
       if (!window.confirm(t("cancelOrder") + "?")) return;
-      const { error } = await client.rpc("cancel_gamevault_order", { p_order_id: currentOrderId });
+      const { error } = await safeRpc("cancel_gamevault_order", { p_order_id: currentOrderId });
       if (error) {
         window.alert(error.message);
         return;
@@ -838,7 +856,7 @@
       role = !error && data?.role === "admin" ? "admin" : "customer";
       renderAuth();
       await loadInventory();
-      await client.rpc("expire_gamevault_orders");
+      await safeRpc("expire_gamevault_orders").catch(() => {});
       if (currentOrderId) await renderOrder(currentOrderId);
     }
 
