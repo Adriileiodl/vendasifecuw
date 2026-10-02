@@ -251,6 +251,20 @@ $$;
 revoke all on function public.expire_gamevault_orders() from public, anon;
 grant execute on function public.expire_gamevault_orders() to authenticated;
 
+create or replace function public.expire_gamevault_order()
+returns integer
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  return public.expire_gamevault_orders();
+end;
+$$;
+
+revoke all on function public.expire_gamevault_order() from public, anon;
+grant execute on function public.expire_gamevault_order() to authenticated;
+
 create or replace function public.restore_cancelled_order_stock()
 returns trigger
 language plpgsql

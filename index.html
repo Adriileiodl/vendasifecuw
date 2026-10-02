@@ -561,14 +561,24 @@
     }
 
     async function safeRpc(functionName, params) {
-      try {
-        return await client.rpc(functionName, params);
-      } catch (error) {
-        if (isMissingDatabaseFunctionError(error)) {
-          throw new Error(`A função do banco "${functionName}" ainda não existe no projeto do Supabase. Execute o script "supabase-setup.sql" no SQL Editor antes de finalizar o pedido.`);
+      const candidateNames = [functionName];
+      if (functionName === "expire_gamevault_orders") candidateNames.push("expire_gamevault_order");
+      else if (functionName === "expire_gamevault_order") candidateNames.push("expire_gamevault_orders");
+
+      let lastError = null;
+      for (const candidateName of candidateNames) {
+        try {
+          return await client.rpc(candidateName, params);
+        } catch (error) {
+          lastError = error;
+          if (!isMissingDatabaseFunctionError(error)) {
+            throw error;
+          }
         }
-        throw error;
       }
+
+      const missingName = candidateNames[0];
+      throw new Error(`A função do banco "${missingName}" ainda não existe no projeto do Supabase. Execute o script "supabase-setup.sql" no SQL Editor antes de finalizar o pedido.`);
     }
 
     function renderAdminOrders(targetId) {
