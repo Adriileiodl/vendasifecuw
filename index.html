@@ -49,10 +49,15 @@
     .lobby-heading { max-width: 700px; margin-bottom: 29px; }
     .lobby-heading h1 { font-size: clamp(35px, 5vw, 52px); }
     .lobby-heading p:last-child { max-width: 560px; margin: 14px 0 0; color: var(--muted); line-height: 1.6; }
+    .lobby-categories { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
     .game-card { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(290px, .75fr); min-height: 310px; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: var(--white); color: var(--ink); text-decoration: none; transition: transform .2s ease, box-shadow .2s ease; }
     .game-card:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(23,35,30,.11); }
-    .game-cover-wrap { position: relative; min-height: 310px; overflow: hidden; background: #15251e; }
-    .game-cover { display: block; width: 100%; height: 100%; min-height: 310px; object-fit: cover; }
+    .game-cover-wrap { position: relative; min-height: 200px; overflow: hidden; background: #15251e; }
+    .game-cover { display: block; width: 100%; height: 100%; min-height: 200px; object-fit: cover; }
+    .discord-cover { display: grid; place-items: center; background: radial-gradient(circle at 75% 20%, #6876d8, transparent 38%), linear-gradient(135deg, #5865f2, #303a91); color: white; }
+    .discord-wordmark { font: 800 clamp(34px, 5vw, 58px) var(--font-display); letter-spacing: .04em; }
+    .discord-cover .cover-badge { background: white; color: #3f4bb5; }
+    .lobby-categories .game-card { grid-template-columns: 1fr; min-height: 0; }
     .cover-badge { position: absolute; left: 18px; bottom: 18px; padding: 8px 11px; border-radius: 5px; background: var(--green); color: var(--ink); font-size: 11px; font-weight: 700; text-transform: uppercase; }
     .game-card-copy { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 32px; }
     .game-card-copy h2 { font-size: 30px; }
@@ -127,6 +132,8 @@
     .hero { position: relative; overflow: hidden; min-height: 300px; background: var(--ink); color: white; }
     .hero::before { content: ""; position: absolute; width: 430px; height: 430px; border-radius: 50%; right: 4%; top: -245px; border: 1px solid rgba(200,241,105,.18); box-shadow: 0 0 0 35px rgba(200,241,105,.035), 0 0 0 75px rgba(200,241,105,.025); }
     .hero-inner { min-height: 300px; display: grid; grid-template-columns: 1fr 360px; align-items: center; gap: 48px; position: relative; }
+    .hero-inner.discord-category { grid-template-columns: 1fr; }
+    .hero-art[hidden] { display: none; }
     .eyebrow { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 17px; color: var(--green); font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
     .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
     h1 { max-width: 620px; margin: 0; font: 600 clamp(36px, 5vw, 56px)/1.02 var(--font-display); letter-spacing: 0; }
@@ -154,10 +161,12 @@
     .product-art.account { background: #e4edda; }
     .product-art.boat { background: #e0edf0; }
     .product-art.money { background: #f5e9d9; }
+    .product-art.nitro { background: #e8e8ff; }
     .artifact { z-index: 1; display: grid; place-items: center; width: 104px; height: 104px; border-radius: 28px; box-shadow: 0 14px 25px rgba(23,35,30,.15); font-size: 54px; transform: rotate(-7deg); }
     .account .artifact { background: linear-gradient(145deg, #d3f883, #79b943); border: 4px solid rgba(255,255,255,.72); border-radius: 50%; }
     .boat .artifact { background: linear-gradient(145deg, #c9f5f3, #64abb0); border: 4px solid rgba(255,255,255,.7); }
     .money .artifact { background: linear-gradient(145deg, #ffe5a5, #e8a94a); border: 4px solid rgba(255,255,255,.75); }
+    .nitro .artifact { background: linear-gradient(145deg, #929cff, #5865f2); border: 4px solid rgba(255,255,255,.75); color: white; }
     .art-label { position: absolute; z-index: 1; bottom: 13px; left: 15px; color: rgba(23,35,30,.68); font: 700 10px var(--font-display); letter-spacing: .08em; text-transform: uppercase; }
     .product-content { padding: 18px 18px 16px; display: flex; flex: 1; flex-direction: column; }
     .product-type { margin: 0 0 7px; color: var(--green-dark); font-size: 10px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
@@ -207,6 +216,8 @@
     @media (max-width: 850px) {
       .hero-inner { grid-template-columns: 1fr 270px; gap: 18px; }
       .hero-art { transform: scale(.88); }
+      .lobby-categories { grid-template-columns: 1fr; }
+      .lobby-categories .game-card { grid-template-columns: minmax(0, 1.25fr) minmax(290px, .75fr); }
       .product-grid { gap: 12px; }
       .product-content { padding: 15px 14px; }
       .buy-row { align-items: end; }
@@ -240,7 +251,9 @@
       .product-grid { grid-template-columns: 1fr; gap: 12px; }
       .product-card { display: grid; grid-template-columns: 118px minmax(0,1fr); min-height: 202px; }
       .game-card { grid-template-columns: 1fr; }
-      .game-cover-wrap { min-height: 240px; }
+      .game-cover-wrap { min-height: 200px; }
+      .game-cover { min-height: 200px; }
+      .lobby-categories .game-card { grid-template-columns: 1fr; }
       .game-card-copy { padding: 22px; }
       .pix-layout { grid-template-columns: 1fr; }
       .qr-box { min-height: 230px; }
@@ -297,10 +310,16 @@
   <main id="top">
     <section class="lobby shell" id="lobby-view" aria-labelledby="lobby-title">
       <div class="lobby-heading"><p class="section-kicker" data-i18n="lobbyKicker">Selecione uma experiência</p><h1 id="lobby-title" data-i18n="lobbyTitle">Qual jogo vamos abrir?</h1><p data-i18n="lobbyCopy">Escolha um jogo para ver os itens disponíveis na GameVault.</p></div>
-      <a class="game-card" href="#blox-fruits" id="open-game">
-        <div class="game-cover-wrap"><img class="game-cover" src="https://tr.rbxcdn.com/180DAY-774ec14539b264f85fdb6e8a34dfa344/512/512/Image/Png/noFilter" alt="Ícone oficial de Blox Fruits no Roblox" data-i18n-alt="bloxCoverAlt"><span class="cover-badge" data-i18n="availableNow">Disponível agora</span></div>
-        <div class="game-card-copy"><p class="section-kicker" data-i18n="robloxGame">Jogo Roblox</p><h2>Blox Fruits</h2><p data-i18n="bloxCardCopy">Contas e gamepasses para sua próxima aventura no mar.</p><span class="game-open" data-i18n="viewItems">Ver itens</span></div>
-      </a>
+      <div class="lobby-categories">
+        <a class="game-card" href="#blox-fruits" data-category="blox-fruits">
+          <div class="game-cover-wrap"><img class="game-cover" src="https://tr.rbxcdn.com/180DAY-774ec14539b264f85fdb6e8a34dfa344/512/512/Image/Png/noFilter" alt="Ícone oficial de Blox Fruits no Roblox" data-i18n-alt="bloxCoverAlt"><span class="cover-badge" data-i18n="availableNow">Disponível agora</span></div>
+          <div class="game-card-copy"><p class="section-kicker" data-i18n="robloxGame">Jogo Roblox</p><h2>Blox Fruits</h2><p data-i18n="bloxCardCopy">Contas e gamepasses para sua próxima aventura no mar.</p><span class="game-open" data-i18n="viewItems">Ver itens</span></div>
+        </a>
+        <a class="game-card" href="#discord" data-category="discord">
+          <div class="game-cover-wrap discord-cover"><span class="discord-wordmark" aria-hidden="true">DISCORD</span><span class="cover-badge" data-i18n="availableNow">Disponível agora</span></div>
+          <div class="game-card-copy"><p class="section-kicker" data-i18n="discordCategory">Comunidade</p><h2>Discord</h2><p data-i18n="discordCardCopy">Contas e vantagens para sua comunidade no Discord.</p><span class="game-open" data-i18n="viewItems">Ver itens</span></div>
+        </a>
+      </div>
     </section>
     <div class="game-view" id="game-view" hidden>
     <section class="hero" aria-labelledby="hero-title">
@@ -308,16 +327,16 @@
         <div>
           <p class="eyebrow" data-i18n="eyebrow">GameVault apresenta</p>
           <h1 id="hero-title" data-i18n="heroTitle">Blox Fruits.<br>Seu próximo nível.</h1>
-          <p class="hero-copy" data-i18n="heroCopy">Contas e gamepasses selecionados para sua próxima aventura. Escolha seu item e confira o estoque disponível.</p>
+          <p class="hero-copy" id="hero-copy" data-i18n="heroCopy">Contas e gamepasses selecionados para sua próxima aventura. Escolha seu item e confira o estoque disponível.</p>
         </div>
-        <div class="hero-art"><img class="game-cover" src="https://tr.rbxcdn.com/180DAY-774ec14539b264f85fdb6e8a34dfa344/512/512/Image/Png/noFilter" alt="Ícone oficial de Blox Fruits no Roblox" data-i18n-alt="bloxCoverAlt"></div>
+        <div class="hero-art" id="hero-art"><img class="game-cover" src="https://tr.rbxcdn.com/180DAY-774ec14539b264f85fdb6e8a34dfa344/512/512/Image/Png/noFilter" alt="Ícone oficial de Blox Fruits no Roblox" data-i18n-alt="bloxCoverAlt"></div>
       </div>
     </section>
 
     <section class="catalog shell" id="catalog" aria-labelledby="catalog-title">
       <div class="catalog-head">
         <div><p class="section-kicker" data-i18n="sectionKicker">Catálogo</p><h2 id="catalog-title" data-i18n="catalogTitle">Blox Fruits</h2></div>
-        <span class="item-count" data-i18n="itemCount">4 itens disponíveis</span>
+        <span class="item-count" id="item-count" data-i18n="itemCount">4 itens disponíveis</span>
       </div>
       <div class="product-grid" id="product-grid"></div>
     </section>
@@ -367,14 +386,14 @@
   <script>
     const products = [
       {
-        id: "account", kind: "account", type: { pt: "Conta", en: "Account", es: "Cuenta" },
+        id: "account", category: "blox-fruits", kind: "account", type: { pt: "Conta", en: "Account", es: "Cuenta" },
         name: { pt: "LV 1800 + GodHuman", en: "LV 1800 + GodHuman", es: "LV 1800 + GodHuman" },
         description: { pt: "Conta de Blox Fruits com nível 1800, estilo de luta GodHuman e frutas aleatórias.", en: "Blox Fruits account with level 1800, GodHuman fighting style, and random fruits.", es: "Cuenta de Blox Fruits nivel 1800, estilo de combate GodHuman y frutas aleatorias." },
         details: { pt: [["Nível", "1800"], ["Estilo de luta", "GodHuman"], ["Frutas", "Aleatórias"]], en: [["Level", "1800"], ["Fighting style", "GodHuman"], ["Fruits", "Random"]], es: [["Nivel", "1800"], ["Estilo de combate", "GodHuman"], ["Frutas", "Aleatorias"]] },
         price: 5, stock: 8, art: "🍈", artLabel: "LV 1800"
       },
       {
-        id: "lvl2750",
+        id: "lvl2750", category: "blox-fruits",
         kind: "account",
         type: { pt: "Conta", en: "Account", es: "Cuenta" },
         name: { pt: "LV 2750-2800 + GodHuman + Skull Guitar + True Triple Katana", en: "LV 2750-2800 + GodHuman + Skull Guitar + True Triple Katana", es: "LV 2750-2800 + GodHuman + Skull Guitar + True Triple Katana" },
@@ -383,38 +402,46 @@
         price: 10, stock: 10, art: "⚔️", artLabel: "LV 2750"
       },
       {
-        id: "boats", kind: "boat", type: { pt: "Gamepass", en: "Gamepass", es: "Gamepass" },
+        id: "boats", category: "blox-fruits", kind: "boat", type: { pt: "Gamepass", en: "Gamepass", es: "Gamepass" },
         name: { pt: "Barcos Rápidos", en: "Fast Boats", es: "Barcos Rápidos" },
         description: { pt: "Gamepass de barcos rápidos para navegar pelo mapa de Blox Fruits.", en: "Fast Boats gamepass for sailing across the Blox Fruits map.", es: "Gamepass de barcos rápidos para navegar por el mapa de Blox Fruits." },
         details: { pt: [["Categoria", "Gamepass"], ["Jogo", "Blox Fruits"]], en: [["Category", "Gamepass"], ["Game", "Blox Fruits"]], es: [["Categoría", "Gamepass"], ["Juego", "Blox Fruits"]] },
         price: 15, stock: 13, art: "🚤", artLabel: "FAST BOATS"
       },
       {
-        id: "money", kind: "money", type: { pt: "Gamepass", en: "Gamepass", es: "Gamepass" },
+        id: "money", category: "blox-fruits", kind: "money", type: { pt: "Gamepass", en: "Gamepass", es: "Gamepass" },
         name: { pt: "2x Money", en: "2x Money", es: "2x Money" },
         description: { pt: "Gamepass 2x Money para receber o dobro de dinheiro no jogo.", en: "2x Money gamepass to earn double money in the game.", es: "Gamepass 2x Money para obtener el doble de dinero en el juego." },
         details: { pt: [["Benefício", "2x dinheiro"], ["Jogo", "Blox Fruits"]], en: [["Benefit", "2x money"], ["Game", "Blox Fruits"]], es: [["Beneficio", "2x dinero"], ["Juego", "Blox Fruits"]] },
         price: 17.3, stock: 5, art: "🪙", artLabel: "2× MONEY"
+      },
+      {
+        id: "discord-nitro", category: "discord", kind: "nitro",
+        type: { pt: "Conta", en: "Account", es: "Cuenta" },
+        name: { pt: "Conta Nitro 3 meses + 14 boosts", en: "3-month Nitro account + 14 boosts", es: "Cuenta Nitro de 3 meses + 14 boosts" },
+        description: { pt: "Conta Discord com Nitro por 3 meses e 14 impulsos (boosts).", en: "Discord account with 3 months of Nitro and 14 server boosts.", es: "Cuenta de Discord con Nitro por 3 meses y 14 impulsos (boosts)." },
+        details: { pt: [["Nitro", "3 meses"], ["Impulsos (boosts)", "14"]], en: [["Nitro", "3 months"], ["Server boosts", "14"]], es: [["Nitro", "3 meses"], ["Impulsos (boosts)", "14"]] },
+        price: 14, stock: 1, art: "✦", artLabel: "NITRO · 3 MESES"
       }
     ];
 
     const translations = {
       pt: {
-        accountButton: "Entrar", lobbyKicker: "Selecione um jogo", lobbyTitle: "Qual jogo vamos abrir?", lobbyCopy: "Escolha um jogo para ver os itens disponíveis na GameVault.", availableNow: "Disponível agora", robloxGame: "Jogo Roblox", bloxCardCopy: "Contas e gamepasses para sua próxima aventura no mar.", viewItems: "Ver itens", bloxCoverAlt: "Capa oficial de Blox Fruits no Roblox", backToGames: "← Voltar aos jogos", accountTitle: "Sua conta", signIn: "Entrar", signUp: "Criar conta", emailLabel: "E-mail", passwordLabel: "Senha", submitSignIn: "Entrar na GameVault", submitSignUp: "Criar minha conta", authConfigMissing: "O login precisa ser conectado ao projeto Supabase. Consulte o README para configurar.", authLoading: "Conectando...", authSignupSuccess: "Cadastro recebido. Confira seu e-mail para confirmar a conta, se a confirmação estiver ativada.", authLoginSuccess: "Entrada realizada.", authErrorFallback: "Não foi possível concluir. Confira os dados e tente novamente.", authSignOut: "Sair da conta", adminRole: "Administradora da loja", customerRole: "Conta GameVault", authClose: "Fechar janela de conta", authPasswordHint: "Use pelo menos 8 caracteres.", authSetup: "Configuração necessária: adicione a URL e a chave pública (anon) do Supabase em config.js. Nunca coloque uma chave service_role no site.",
+        accountButton: "Entrar", lobbyKicker: "Selecione um jogo", lobbyTitle: "Qual jogo vamos abrir?", lobbyCopy: "Escolha um jogo para ver os itens disponíveis na GameVault.", availableNow: "Disponível agora", robloxGame: "Jogo Roblox", bloxCardCopy: "Contas e gamepasses para sua próxima aventura no mar.", discordCategory: "Comunidade", discordCardCopy: "Contas e vantagens para sua comunidade no Discord.", viewItems: "Ver itens", bloxCoverAlt: "Capa oficial de Blox Fruits no Roblox", backToGames: "← Voltar aos jogos", accountTitle: "Sua conta", signIn: "Entrar", signUp: "Criar conta", emailLabel: "E-mail", passwordLabel: "Senha", submitSignIn: "Entrar na GameVault", submitSignUp: "Criar minha conta", authConfigMissing: "O login precisa ser conectado ao projeto Supabase. Consulte o README para configurar.", authLoading: "Conectando...", authSignupSuccess: "Cadastro recebido. Confira seu e-mail para confirmar a conta, se a confirmação estiver ativada.", authLoginSuccess: "Entrada realizada.", authErrorFallback: "Não foi possível concluir. Confira os dados e tente novamente.", authSignOut: "Sair da conta", adminRole: "Administradora da loja", customerRole: "Conta GameVault", authClose: "Fechar janela de conta", authPasswordHint: "Use pelo menos 8 caracteres.", authSetup: "Configuração necessária: adicione a URL e a chave pública (anon) do Supabase em config.js. Nunca coloque uma chave service_role no site.",
         checkout: "Gerar pedido Pix", checkoutNote: "O estoque fica reservado por 20 minutos; pague antes do prazo do pedido.", pixKicker: "Finalizar pedido", pixTitle: "Pagamento via Pix", pixIntro: "Escaneie o QR code ou copie o código Pix. O pedido fica pendente até a loja confirmar o recebimento.", backToCatalog: "Voltar à loja", qrLoading: "Gerando QR Pix…", qrInstruction: "No app do seu banco, escolha pagar com Pix e escaneie este código.", pendingPayment: "Aguardando confirmação do pagamento", orderTotal: "Total do pedido", pixCopyLabel: "Pix copia e cola", copyPixCode: "Copiar código Pix", copyPixKey: "Copiar chave CPF", pixKeyLabel: "Chave Pix (CPF)", pixReceiverLabel: "Recebedor", manualPaymentNote: "A chave CPF gera um Pix estático. Pague em até 20 minutos: depois do prazo o pedido expira e o estoque é liberado. O administrador só aprova após conferir o valor no banco; clicar ou enviar comprovante não confirma o pagamento.", pixCopied: "Copiado para a área de transferência.", purchaseConfirmed: "Pagamento confirmado", deliveryNote: "Seu pedido foi liberado pela loja. Confira os itens comprados abaixo.", sellerChatTitle: "Fale com o vendedor", sellerChatCopy: "Use o chat para combinar a entrega dos itens confirmados.", openSellerChat: "Abrir chat de suporte", noTawk: "O chat de suporte não carregou. Recarregue a página ou tente novamente.", orderError: "Não foi possível criar o pedido. Confira sua conexão e o estoque.", loginRequired: "Entre na sua conta antes de finalizar o pedido.", orderReference: "Pedido", cancelOrder: "Cancelar pedido Pix", orderCancelled: "Pedido cancelado; o estoque foi liberado.", adminPendingOrders: "Pedidos aguardando Pix", approvePayment: "Confirmar crédito recebido", verifyPaymentFirst: "Confirme no extrato bancário que este Pix foi recebido antes de aprovar.", noPendingOrders: "Nenhum pedido aguardando confirmação.", orderPending: "Pendente", orderPaid: "Pago e confirmado", orderCancelledStatus: "Cancelado", pixExpired: "Este pedido expirou. Volte à loja para criar outro.",
         cart: "Carrinho", openCart: "Abrir carrinho", eyebrow: "GameVault apresenta", heroTitle: "Blox Fruits.<br>Seu próximo nível.",
         heroCopy: "Contas e gamepasses selecionados para sua próxima aventura. Escolha seu item e confira o estoque disponível.", heroTagTop: "BLOX FRUITS", heroTagBottom: "INVENTÁRIO DIGITAL", sectionKicker: "Catálogo", catalogTitle: "Blox Fruits", itemCount: "4 itens disponíveis", footerText: "Loja oficial · Blox Fruits",
         cartTitle: "Seu carrinho", closeCart: "Fechar carrinho", subtotal: "Subtotal", checkout: "Continuar para pagamento", checkoutNote: "O pagamento online ainda não está configurado. Nenhuma cobrança será feita.", emptyCart: "Seu carrinho está vazio. Escolha um item do catálogo para começar.", stock: "em estoque", add: "Adicionar", added: "Adicionado ao carrinho", remove: "Remover uma unidade", checkoutUnavailable: "O pagamento online ainda não está configurado. Seus itens continuam no carrinho.", priceEach: "cada", footerText: "GameVault · Blox Fruits"
       },
       en: {
-        accountButton: "Sign in", lobbyKicker: "Choose a game", lobbyTitle: "Which game shall we open?", lobbyCopy: "Choose a game to browse the items available at GameVault.", availableNow: "Available now", robloxGame: "Roblox game", bloxCardCopy: "Accounts and gamepasses for your next adventure at sea.", viewItems: "Browse items", bloxCoverAlt: "Official Blox Fruits cover on Roblox", backToGames: "← Back to games", accountTitle: "Your account", signIn: "Sign in", signUp: "Create account", emailLabel: "Email", passwordLabel: "Password", submitSignIn: "Sign in to GameVault", submitSignUp: "Create my account", authConfigMissing: "Sign-in must be connected to a Supabase project. See the README for setup.", authLoading: "Connecting...", authSignupSuccess: "Sign-up received. Check your email to confirm your account if confirmation is enabled.", authLoginSuccess: "Signed in.", authErrorFallback: "Could not complete the request. Check your details and try again.", authSignOut: "Sign out", adminRole: "Store administrator", customerRole: "GameVault account", authClose: "Close account window", authPasswordHint: "Use at least 8 characters.", authSetup: "Setup required: add the Supabase URL and public anon key in config.js. Never put a service_role key on the website.",
+        accountButton: "Sign in", lobbyKicker: "Choose a game", lobbyTitle: "Which game shall we open?", lobbyCopy: "Choose a game to browse the items available at GameVault.", availableNow: "Available now", robloxGame: "Roblox game", bloxCardCopy: "Accounts and gamepasses for your next adventure at sea.", discordCategory: "Community", discordCardCopy: "Accounts and perks for your Discord community.", viewItems: "Browse items", bloxCoverAlt: "Official Blox Fruits cover on Roblox", backToGames: "← Back to games", accountTitle: "Your account", signIn: "Sign in", signUp: "Create account", emailLabel: "Email", passwordLabel: "Password", submitSignIn: "Sign in to GameVault", submitSignUp: "Create my account", authConfigMissing: "Sign-in must be connected to a Supabase project. See the README for setup.", authLoading: "Connecting...", authSignupSuccess: "Sign-up received. Check your email to confirm your account if confirmation is enabled.", authLoginSuccess: "Signed in.", authErrorFallback: "Could not complete the request. Check your details and try again.", authSignOut: "Sign out", adminRole: "Store administrator", customerRole: "GameVault account", authClose: "Close account window", authPasswordHint: "Use at least 8 characters.", authSetup: "Setup required: add the Supabase URL and public anon key in config.js. Never put a service_role key on the website.",
         checkout: "Create Pix order", checkoutNote: "Stock is reserved for 20 minutes; pay before the order expires.", pixKicker: "Place order", pixTitle: "Pay with Pix", pixIntro: "Scan the QR code or copy the Pix code. The order stays pending until the store confirms receipt.", backToCatalog: "Back to store", qrLoading: "Generating Pix QR…", qrInstruction: "In your banking app, choose Pix payment and scan this code.", pendingPayment: "Waiting for payment confirmation", orderTotal: "Order total", pixCopyLabel: "Pix copy and paste", copyPixCode: "Copy Pix code", copyPixKey: "Copy CPF key", pixKeyLabel: "Pix key (CPF)", pixReceiverLabel: "Recipient", manualPaymentNote: "The CPF key creates a static Pix. Pay within 20 minutes; after that the order expires and stock is released. An administrator approves only after verifying the amount in the bank; clicking or sending a receipt does not confirm payment.", pixCopied: "Copied to clipboard.", purchaseConfirmed: "Payment confirmed", deliveryNote: "The store released your order. Review the purchased items below.", sellerChatTitle: "Chat with the seller", sellerChatCopy: "Use chat to arrange delivery of confirmed items.", openSellerChat: "Open support chat", noTawk: "Support chat did not load. Refresh the page or try again.", orderError: "Could not create the order. Check your connection and stock.", loginRequired: "Sign in before checking out.", orderReference: "Order", cancelOrder: "Cancel Pix order", orderCancelled: "Order cancelled; stock was released.", adminPendingOrders: "Orders awaiting Pix", approvePayment: "Confirm received payment", verifyPaymentFirst: "Check the bank statement and confirm this Pix arrived before approving.", noPendingOrders: "No orders are awaiting confirmation.", orderPending: "Pending", orderPaid: "Paid and confirmed", orderCancelledStatus: "Cancelled", pixExpired: "This order expired. Return to the store to create another.",
         cart: "Cart", openCart: "Open cart", eyebrow: "Presented by GameVault", heroTitle: "Blox Fruits.<br>Your next level.",
         heroCopy: "Accounts and gamepasses selected for your next adventure. Choose an item and check the available stock.", heroTagTop: "BLOX FRUITS", heroTagBottom: "DIGITAL INVENTORY", sectionKicker: "Catalog", catalogTitle: "Blox Fruits", itemCount: "4 items available", footerText: "Official store · Blox Fruits",
         cartTitle: "Your cart", closeCart: "Close cart", subtotal: "Subtotal", checkout: "Continue to payment", checkoutNote: "Online payment is not configured yet. You will not be charged.", emptyCart: "Your cart is empty. Choose an item from the catalog to get started.", stock: "in stock", add: "Add", added: "Added to cart", remove: "Remove one item", checkoutUnavailable: "Online payment is not configured yet. Your items are still in the cart.", priceEach: "each", footerText: "GameVault · Blox Fruits"
       },
       es: {
-        accountButton: "Entrar", lobbyKicker: "Elige un juego", lobbyTitle: "¿Qué juego abrimos?", lobbyCopy: "Elige un juego para ver los artículos disponibles en GameVault.", availableNow: "Disponible ahora", robloxGame: "Juego de Roblox", bloxCardCopy: "Cuentas y gamepasses para tu próxima aventura en el mar.", viewItems: "Ver artículos", bloxCoverAlt: "Portada oficial de Blox Fruits en Roblox", backToGames: "← Volver a los juegos", accountTitle: "Tu cuenta", signIn: "Entrar", signUp: "Crear cuenta", emailLabel: "Correo electrónico", passwordLabel: "Contraseña", submitSignIn: "Entrar en GameVault", submitSignUp: "Crear mi cuenta", authConfigMissing: "El inicio de sesión debe conectarse a un proyecto de Supabase. Consulta el README para configurarlo.", authLoading: "Conectando...", authSignupSuccess: "Registro recibido. Revisa tu correo para confirmar la cuenta si la confirmación está activada.", authLoginSuccess: "Sesión iniciada.", authErrorFallback: "No se pudo completar. Revisa tus datos e inténtalo de nuevo.", authSignOut: "Cerrar sesión", adminRole: "Administradora de la tienda", customerRole: "Cuenta GameVault", authClose: "Cerrar ventana de cuenta", authPasswordHint: "Usa al menos 8 caracteres.", authSetup: "Configuración necesaria: añade la URL y la clave pública (anon) de Supabase en config.js. Nunca publiques una clave service_role.",
+        accountButton: "Entrar", lobbyKicker: "Elige un juego", lobbyTitle: "¿Qué juego abrimos?", lobbyCopy: "Elige un juego para ver los artículos disponibles en GameVault.", availableNow: "Disponible ahora", robloxGame: "Juego de Roblox", bloxCardCopy: "Cuentas y gamepasses para tu próxima aventura en el mar.", discordCategory: "Comunidad", discordCardCopy: "Cuentas y ventajas para tu comunidad en Discord.", viewItems: "Ver artículos", bloxCoverAlt: "Portada oficial de Blox Fruits en Roblox", backToGames: "← Volver a los juegos", accountTitle: "Tu cuenta", signIn: "Entrar", signUp: "Crear cuenta", emailLabel: "Correo electrónico", passwordLabel: "Contraseña", submitSignIn: "Entrar en GameVault", submitSignUp: "Crear mi cuenta", authConfigMissing: "El inicio de sesión debe conectarse a un proyecto de Supabase. Consulta el README para configurarlo.", authLoading: "Conectando...", authSignupSuccess: "Registro recibido. Revisa tu correo para confirmar la cuenta si la confirmación está activada.", authLoginSuccess: "Sesión iniciada.", authErrorFallback: "No se pudo completar. Revisa tus datos e inténtalo de nuevo.", authSignOut: "Cerrar sesión", adminRole: "Administradora de la tienda", customerRole: "Cuenta GameVault", authClose: "Cerrar ventana de cuenta", authPasswordHint: "Usa al menos 8 caracteres.", authSetup: "Configuración necesaria: añade la URL y la clave pública (anon) de Supabase en config.js. Nunca publiques una clave service_role.",
         checkout: "Crear pedido Pix", checkoutNote: "El stock se reserva 20 minutos; paga antes de que venza el pedido.", pixKicker: "Finalizar pedido", pixTitle: "Pago con Pix", pixIntro: "Escanea el código QR o copia el código Pix. El pedido queda pendiente hasta que la tienda confirme el pago.", backToCatalog: "Volver a la tienda", qrLoading: "Generando QR Pix…", qrInstruction: "En la app de tu banco, elige pagar con Pix y escanea este código.", pendingPayment: "Esperando confirmación del pago", orderTotal: "Total del pedido", pixCopyLabel: "Pix para copiar y pegar", copyPixCode: "Copiar código Pix", copyPixKey: "Copiar clave CPF", pixKeyLabel: "Clave Pix (CPF)", pixReceiverLabel: "Destinatario", manualPaymentNote: "La clave CPF genera un Pix estático. Paga en 20 minutos; después el pedido vence y se libera el stock. El administrador solo aprueba tras verificar el importe en el banco; hacer clic o enviar un recibo no confirma el pago.", pixCopied: "Copiado al portapapeles.", purchaseConfirmed: "Pago confirmado", deliveryNote: "La tienda liberó tu pedido. Revisa los artículos comprados abajo.", sellerChatTitle: "Habla con el vendedor", sellerChatCopy: "Usa el chat para coordinar la entrega de los artículos confirmados.", openSellerChat: "Abrir chat de soporte", noTawk: "El chat de soporte no cargó. Recarga la página o inténtalo de nuevo.", orderError: "No se pudo crear el pedido. Comprueba tu conexión y el stock.", loginRequired: "Inicia sesión antes de finalizar el pedido.", orderReference: "Pedido", cancelOrder: "Cancelar pedido Pix", orderCancelled: "Pedido cancelado; se liberó el stock.", adminPendingOrders: "Pedidos pendientes de Pix", approvePayment: "Confirmar pago recibido", verifyPaymentFirst: "Verifica en el extracto bancario que llegó este Pix antes de aprobarlo.", noPendingOrders: "No hay pedidos esperando confirmación.", orderPending: "Pendiente", orderPaid: "Pagado y confirmado", orderCancelledStatus: "Cancelado", pixExpired: "Este pedido venció. Vuelve a la tienda para crear otro.",
         cart: "Carrito", openCart: "Abrir carrito", eyebrow: "Presentado por GameVault", heroTitle: "Blox Fruits.<br>Tu próximo nivel.",
         heroCopy: "Cuentas y gamepasses seleccionados para tu próxima aventura. Elige un artículo y consulta el stock disponible.", heroTagTop: "BLOX FRUITS", heroTagBottom: "INVENTARIO DIGITAL", sectionKicker: "Catálogo", catalogTitle: "Blox Fruits", itemCount: "4 artículos disponibles", footerText: "Tienda oficial · Blox Fruits",
@@ -432,6 +459,23 @@
     window.GAMEVAULT_CART = cart;
     window.GAMEVAULT_PRODUCTS = products;
     const formatter = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+    const categories = {
+      "blox-fruits": {
+        name: { pt: "Blox Fruits", en: "Blox Fruits", es: "Blox Fruits" },
+        heroTitle: { pt: "Blox Fruits.<br>Seu próximo nível.", en: "Blox Fruits.<br>Your next level.", es: "Blox Fruits.<br>Tu próximo nivel." },
+        heroCopy: { pt: "Contas e gamepasses selecionados para sua próxima aventura. Escolha seu item e confira o estoque disponível.", en: "Accounts and gamepasses selected for your next adventure. Choose an item and check the available stock.", es: "Cuentas y gamepasses seleccionados para tu próxima aventura. Elige un artículo y consulta el stock disponible." },
+        footer: { pt: "GameVault · Blox Fruits", en: "GameVault · Blox Fruits", es: "GameVault · Blox Fruits" },
+        itemCount: { pt: "itens disponíveis", en: "items available", es: "artículos disponibles" }
+      },
+      discord: {
+        name: { pt: "Discord", en: "Discord", es: "Discord" },
+        heroTitle: { pt: "Discord.<br>Mais vantagens.", en: "Discord.<br>More perks.", es: "Discord.<br>Más ventajas." },
+        heroCopy: { pt: "Contas e vantagens para sua comunidade no Discord. Escolha seu item e confira o estoque disponível.", en: "Accounts and perks for your Discord community. Choose an item and check the available stock.", es: "Cuentas y ventajas para tu comunidad de Discord. Elige un artículo y consulta el stock disponible." },
+        footer: { pt: "GameVault · Discord", en: "GameVault · Discord", es: "GameVault · Discord" },
+        itemCount: { pt: "item disponível", en: "item available", es: "artículo disponible" }
+      }
+    };
+    let activeCategory = "blox-fruits";
     const productGrid = document.getElementById("product-grid");
     const cartPanel = document.getElementById("cart-panel");
     const overlay = document.getElementById("overlay");
@@ -440,8 +484,21 @@
 
     function text(key) { return translations[language][key]; }
     function remaining(product) { return product.stock - (cart.get(product.id) || 0); }
+    function updateCategoryContent() {
+      const category = categories[activeCategory];
+      const categoryProducts = products.filter((product) => product.category === activeCategory);
+      document.getElementById("hero-title").innerHTML = category.heroTitle[language];
+      document.getElementById("hero-copy").textContent = category.heroCopy[language];
+      document.getElementById("catalog-title").textContent = category.name[language];
+      document.getElementById("item-count").textContent = `${categoryProducts.length} ${category.itemCount[language]}`;
+      document.title = `GameVault | ${category.name[language]}`;
+      document.querySelector(".footer span").textContent = category.footer[language];
+      document.querySelector(".hero-inner").classList.toggle("discord-category", activeCategory === "discord");
+      document.getElementById("hero-art").hidden = activeCategory === "discord";
+    }
     function renderProducts() {
-      productGrid.innerHTML = products.map((product) => {
+      const categoryProducts = products.filter((product) => product.category === activeCategory);
+      productGrid.innerHTML = categoryProducts.map((product) => {
         const stock = remaining(product);
         const details = product.details[language].map(([label, value]) => `<div class="detail-row"><span>${label}</span><span>${value}</span></div>`).join("");
         return `<article class="product-card">
@@ -454,6 +511,7 @@
           </div>
         </article>`;
       }).join("");
+      updateCategoryContent();
       productGrid.querySelectorAll("[data-add]").forEach((button) => button.addEventListener("click", () => addToCart(button.dataset.add)));
       document.querySelector(".cart-button").setAttribute("aria-label", text("openCart"));
     }
@@ -503,14 +561,19 @@
     window.GAMEVAULT_RENDER_CART = renderCart;
     window.GAMEVAULT_SET_CART_OPEN = setCartOpen;
 
-    function setGameView(open) {
+    function setGameView(open, categoryId = activeCategory) {
+      if (open) activeCategory = categoryId;
       document.getElementById("lobby-view").hidden = open;
       document.getElementById("game-view").hidden = !open;
-      history.replaceState(null, "", open ? "#blox-fruits" : "#inicio");
+      if (open) renderProducts();
+      history.replaceState(null, "", open ? `#${activeCategory}` : "#inicio");
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    document.getElementById("open-game").addEventListener("click", (event) => { event.preventDefault(); setGameView(true); });
+    document.querySelectorAll("[data-category]").forEach((card) => card.addEventListener("click", (event) => {
+      event.preventDefault();
+      setGameView(true, card.dataset.category);
+    }));
     document.getElementById("back-to-lobby").addEventListener("click", (event) => { event.preventDefault(); setGameView(false); });
 
     document.getElementById("language").addEventListener("change", (event) => {
@@ -554,6 +617,13 @@
 
     const t = (key) => translations[language][key];
     const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
+
+    function maskPixKey(value) {
+      const digits = String(value || "").replace(/\D/g, "");
+      if (!digits) return "Oculta";
+      if (digits.length === 11) return "***.***.***-**";
+      return "********";
+    }
 
     function isMissingDatabaseFunctionError(error) {
       const message = String(error?.message || error || "");
@@ -705,7 +775,7 @@
       document.getElementById("pix-view").hidden = true;
       document.getElementById("catalog").hidden = false;
       document.getElementById("back-to-lobby").hidden = false;
-      history.replaceState(null, "", "#blox-fruits");
+      history.replaceState(null, "", `#${activeCategory}`);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
@@ -775,7 +845,7 @@
         window.Tawk_API?.hideWidget?.();
         const { payload, pixKey, merchantName } = makePixPayload(order);
         document.getElementById("pix-copy-code").value = payload;
-        document.getElementById("pix-key-value").textContent = config.pixKey;
+        document.getElementById("pix-key-value").textContent = maskPixKey(config.pixKey);
         document.getElementById("pix-receiver-value").textContent = merchantName;
         const qr = document.createElement("img");
         qr.alt = t("pixTitle");

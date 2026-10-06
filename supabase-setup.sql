@@ -70,7 +70,8 @@ create table if not exists public.products (
 insert into public.products (id, name, price_cents, stock) values
   ('account', 'LV 1800 + GodHuman', 500, 8),
   ('boats', 'Barcos Rápidos', 1500, 13),
-  ('money', '2x Money', 1730, 5)
+  ('money', '2x Money', 1730, 5),
+  ('discord-nitro', 'Conta Nitro 3 meses + 14 boosts', 1400, 1)
 on conflict (id) do nothing;
 
 create table if not exists public.orders (
