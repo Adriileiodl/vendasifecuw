@@ -5,7 +5,15 @@ Loja de Blox Fruits e Discord com lobby, catálogo PT/EN/ES, login Supabase, ped
 ## 1. Configurar cadastro e login
 
 1. Crie um projeto em [supabase.com](https://supabase.com/) e abra **SQL Editor**.
-2. Copie e execute o conteúdo atualizado de `supabase-setup.sql` no SQL Editor. Ele cria perfis, catálogo com estoque (incluindo Conta Nitro de 3 meses com 14 boosts por R$ 14), pedidos e itens, funções atômicas de reserva/cancelamento e políticas RLS. Se já executou uma versão antiga, execute o arquivo atualizado inteiro novamente.
+2. Copie e execute o conteúdo atualizado de `supabase-setup.sql` no SQL Editor. Ele cria perfis, catálogo com estoque (incluindo 7 contas Nitro de 3 meses com 14 boosts por R$ 14), pedidos e itens, funções atômicas de reserva/cancelamento e políticas RLS. Se já executou uma versão antiga, execute o arquivo atualizado inteiro novamente. Para atualizar somente o estoque Discord em um banco já configurado, execute esta instrução no SQL Editor:
+
+```sql
+update public.products
+set stock = 7
+where id = 'discord-nitro';
+```
+
+Se o comando atualizar zero linhas, execute o conteúdo atualizado de `supabase-setup.sql` para cadastrar o produto.
 3. Em **Authentication > Providers**, habilite **Email**. Em produção, mantenha a confirmação de e-mail ligada e configure o SMTP para que os links de confirmação sejam entregues corretamente.
 4. Em **Authentication > URL Configuration**, adicione o endereço publicado do site em **Site URL** e **Redirect URLs**.
 5. Em **Project Settings > API**, copie a **Project URL** e a chave pública **anon/publishable** para `config.js`:

@@ -70,9 +70,15 @@ create table if not exists public.products (
 insert into public.products (id, name, price_cents, stock) values
   ('account', 'LV 1800 + GodHuman', 500, 8),
   ('boats', 'Barcos Rápidos', 1500, 13),
-  ('money', '2x Money', 1730, 5),
-  ('discord-nitro', 'Conta Nitro 3 meses + 14 boosts', 1400, 1)
+  ('money', '2x Money', 1730, 5)
 on conflict (id) do nothing;
+
+insert into public.products (id, name, price_cents, stock)
+values ('discord-nitro', 'Conta Nitro 3 meses + 14 boosts', 1400, 7)
+on conflict (id) do update
+set name = excluded.name,
+    price_cents = excluded.price_cents,
+    stock = excluded.stock;
 
 create table if not exists public.orders (
   id uuid primary key default gen_random_uuid(),
